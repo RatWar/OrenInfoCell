@@ -1,4 +1,10 @@
 <resources>
     <string name="app_name">OrenInfoCell</string>
     <string name="action_settings">Settings</string>
+    <string name="banner_ad_unit_id">ca-app-pub-6335496795536464/7596480434</string>
+    <string name="txtCell">txtCell</string>
+    <string name="txtSignal">txtSignal</string>
+    <string name="txtNeighboring">Соседи</string>
+    <string name="txtNotAddress">Not Address</string>
+    <string name="txtUnknown">Unknown</string>
 </resources>

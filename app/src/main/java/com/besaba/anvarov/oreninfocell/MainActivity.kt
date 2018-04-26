@@ -15,11 +15,11 @@ import android.telephony.gsm.GsmCellLocation
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.TextView
 import com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar
 import com.besaba.anvarov.oreninfocell.Ads.showBottomBanner
 import io.vrinda.kotlinpermissions.PermissionCallBack
 import io.vrinda.kotlinpermissions.PermissionsActivity
+import kotlinx.android.synthetic.main.content_main.*
 
 class MainActivity : PermissionsActivity() {
 
@@ -35,31 +35,21 @@ class MainActivity : PermissionsActivity() {
     private val listener = object : PhoneStateListener() {
         override fun onCellLocationChanged(location: CellLocation) {
             val gctLoc = location as GsmCellLocation
-            val mCell: TextView = findViewById(R.id.tvCell)
-//            mCell.text = DeviceInfo.getBuildVersionIncremental()
-            mCell.text = (cellText(gctLoc.cid) + " ("
-                    + gctLoc.lac.toString() + ")")
+            tvCell.text = (cellText(gctLoc.cid) + " (" + gctLoc.lac.toString() + ")")
         }
 
         override fun onSignalStrengthsChanged(signalStrength: SignalStrength) {
             super.onSignalStrengthsChanged(signalStrength)
-            val sig: Int
             val lev: Int
-            if (typeNetworkToInt(tm.networkType) < 4) {
-                lev = signalStrength.gsmSignalStrength
-                sig = asu2dbm(lev)
+            lev = if (typeNetworkToInt(tm.networkType) < 4) {
+                signalStrength.gsmSignalStrength
             } else {
-                val ssignal = signalStrength.toString()
-                val parts = ssignal.split(" ".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-                lev = Integer.parseInt(parts[8]) * 2 - 113
-                sig = asu2dbm(lev)
+                val parts = signalStrength.toString().split(" ".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+                Integer.parseInt(parts[8]) * 2 - 113
             }
-            val mSignal: TextView = findViewById(R.id.tvSignal)
-            mSignal.text = (dbm2text(sig) + "   (ASU=" + lev + ")" + "   "
-                    + netType[tm.networkType])
+            tvSignal.text = (dbm2text(asu2dbm(lev)) + "   (ASU=" + lev + ")" + "   " + netType[tm.networkType])
             progressColor(lev)
             progressCur(lev)
-
         }
 
         private fun cellText(nCell: Int): String {
@@ -115,19 +105,7 @@ class MainActivity : PermissionsActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        requestPermissions(Manifest.permission.ACCESS_COARSE_LOCATION, object: PermissionCallBack {})
-
-//        requestPermissions(Manifest.permission.ACCESS_COARSE_LOCATION, object: PermissionCallBack {
-//            override fun permissionGranted() {
-//                super.permissionGranted()
-//                Log.v("Call permissions", "Granted")
-//            }
-//
-//            override fun permissionDenied() {
-//                super.permissionDenied()
-//                Log.v("Call permissions", "Denied")
-//            }
-//        })
+        requestPermissions(Manifest.permission.ACCESS_COARSE_LOCATION, object : PermissionCallBack {})
 
         showBottomBanner(activity = this)
 
@@ -169,12 +147,11 @@ class MainActivity : PermissionsActivity() {
     }
 
     private fun progressMax(isLTE: Boolean): Int {
-        return if (isLTE) 97 else 31
+        if (isLTE) return 97 else return 31
     }
 
     private fun progressColor(asu: Int) {
-        val color = asu / 4
-        when (color) {
+        when (asu / 4) {
             0 -> mProgress.progressColor = Color.RED
             1 -> mProgress.progressColor = Color.YELLOW
             2 -> mProgress.progressColor = Color.GREEN

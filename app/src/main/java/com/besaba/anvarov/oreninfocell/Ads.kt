@@ -30,7 +30,7 @@ object Ads {
         //AdRequest mAdRequest = new AdRequest.Builder().build();
         val mAdRequest = com.google.android.gms.ads.AdRequest.Builder()
                 .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
-                //.addTestDevice("33175F884727E60CF084D3AB52AE82F4").build();  // LG
+//                .addTestDevice("33175F884727E60CF084D3AB52AE82F4").build()  // LG
                 .addTestDevice("F54F6C3C41BB5F282422DCBB53B21625").build()  // BlackView
 
         mAdView.loadAd(mAdRequest)

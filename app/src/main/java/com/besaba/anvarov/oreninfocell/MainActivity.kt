@@ -1,11 +1,11 @@
 package com.besaba.anvarov.oreninfocell
 
+import android.Manifest
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
 import android.support.design.widget.Snackbar
-import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.telephony.CellLocation
 import android.telephony.PhoneStateListener
@@ -18,10 +18,11 @@ import android.view.View
 import android.widget.TextView
 import com.akexorcist.roundcornerprogressbar.RoundCornerProgressBar
 import com.besaba.anvarov.oreninfocell.Ads.showBottomBanner
+import io.vrinda.kotlinpermissions.PermissionCallBack
+import io.vrinda.kotlinpermissions.PermissionsActivity
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : PermissionsActivity() {
 
-    private lateinit var mAddr: TextView
     lateinit var st: String
     lateinit var tm: TelephonyManager
     private lateinit var mProgress: RoundCornerProgressBar
@@ -35,6 +36,7 @@ class MainActivity : AppCompatActivity() {
         override fun onCellLocationChanged(location: CellLocation) {
             val gctLoc = location as GsmCellLocation
             val mCell: TextView = findViewById(R.id.tvCell)
+//            mCell.text = DeviceInfo.getBuildVersionIncremental()
             mCell.text = (cellText(gctLoc.cid) + " ("
                     + gctLoc.lac.toString() + ")")
         }
@@ -113,10 +115,21 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        showBottomBanner(activity = this)
+        requestPermissions(Manifest.permission.ACCESS_COARSE_LOCATION, object: PermissionCallBack {})
 
-        mAddr = findViewById<View>(R.id.tvAddress) as TextView
-        mAddr.setText(R.string.txtNotAddress)
+//        requestPermissions(Manifest.permission.ACCESS_COARSE_LOCATION, object: PermissionCallBack {
+//            override fun permissionGranted() {
+//                super.permissionGranted()
+//                Log.v("Call permissions", "Granted")
+//            }
+//
+//            override fun permissionDenied() {
+//                super.permissionDenied()
+//                Log.v("Call permissions", "Denied")
+//            }
+//        })
+
+        showBottomBanner(activity = this)
 
         tm = getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
         tm.listen(listener, PhoneStateListener.LISTEN_CELL_LOCATION or PhoneStateListener.LISTEN_SIGNAL_STRENGTHS)

@@ -23,7 +23,6 @@ import kotlinx.android.synthetic.main.content_main.*
 
 class MainActivity : PermissionsActivity() {
 
-    lateinit var st: String
     lateinit var tm: TelephonyManager
     private lateinit var mProgress: RoundCornerProgressBar
     //int g1[] = {4, 11};
@@ -34,8 +33,10 @@ class MainActivity : PermissionsActivity() {
 
     private val listener = object : PhoneStateListener() {
         override fun onCellLocationChanged(location: CellLocation) {
+            super.onCellLocationChanged(location)
             val gctLoc = location as GsmCellLocation
             tvCell.text = (cellText(gctLoc.cid) + " (" + gctLoc.lac.toString() + ")")
+            tvAddress.text = addressText(gctLoc.cid)
         }
 
         override fun onSignalStrengthsChanged(signalStrength: SignalStrength) {
@@ -52,11 +53,18 @@ class MainActivity : PermissionsActivity() {
             progressCur(lev)
         }
 
+        // преобразование номера соты в строку
         private fun cellText(nCell: Int): String {
-            st = ((nCell and 65535) + 10000).toString()
+            val st = ((nCell and 65535) + 10000).toString()
             return st.substring(1, 4) + "-" + st[4]
         }
 
+        // по номеру соты возвращает адрес
+        private fun addressText(nCell: Int): String {
+            return "Not address"
+        }
+
+        // определяю поколение сети - 2G, 3G, 4G
         private fun typeNetworkToInt(typeNetwork: Int): Int {
             return when (typeNetwork) {
                 1, 2 -> 2
@@ -74,7 +82,10 @@ class MainActivity : PermissionsActivity() {
         }
 
         private fun dbm2text(ndbm: Int): String {
-            return if (ndbm == -1) R.string.txtUnknown.toString() else ndbm.toString() + " dBm"
+            return when (ndbm) {
+                -1 -> R.string.txtUnknown.toString()
+                else -> ndbm.toString() + " dBm"
+            }
         }
 
         /*
@@ -147,7 +158,10 @@ class MainActivity : PermissionsActivity() {
     }
 
     private fun progressMax(isLTE: Boolean): Int {
-        if (isLTE) return 97 else return 31
+        return when {
+            isLTE -> 97
+            else -> 31
+        }
     }
 
     private fun progressColor(asu: Int) {

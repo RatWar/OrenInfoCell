@@ -23,6 +23,7 @@ import kotlinx.android.synthetic.main.content_main.*
 
 class MainActivity : PermissionsActivity() {
 
+    private var db: DatabaseBS? = null
     lateinit var tm: TelephonyManager
     private lateinit var mProgress: RoundCornerProgressBar
     //int g1[] = {4, 11};
@@ -61,7 +62,8 @@ class MainActivity : PermissionsActivity() {
 
         // по номеру соты возвращает адрес
         private fun addressText(nCell: Int): String {
-            return "Not address"
+            val st = ((nCell and 65535) + 10000).toString()
+            return db!!.getBS("56" + st.substring(1, 4))
         }
 
         // определяю поколение сети - 2G, 3G, 4G
@@ -130,6 +132,9 @@ class MainActivity : PermissionsActivity() {
 
         val toolbar = findViewById<View>(R.id.toolbar) as Toolbar
         setSupportActionBar(toolbar)
+
+        db = DatabaseBS(this)
+        db!!.readableDatabase
 
         val fab = findViewById<View>(R.id.fab) as FloatingActionButton
         fab.setOnClickListener { view ->
